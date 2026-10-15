@@ -1,0 +1,2459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>クラス分け樽</title>
+  <style>
+    /* ==========================================
+       1. モダンデザイン・カラーパレット & 変数
+       ========================================== */
+    :root {
+      --primary-dark: #0f172a;
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --bg-slate: #f1f5f9;
+      --card-bg: #ffffff;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      
+      --danger: #ef4444;
+      --warning: #f59e0b;
+      --success: #10b981;
+      
+      --male-bg: #f0f9ff;
+      --male-border: #bae6fd;
+      --female-bg: #fdf2f8;
+      --female-border: #fbcfe8;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-slate);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 60px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ヘッダー */
+    header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #ffffff;
+      padding: 16px 28px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-md);
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    header .sub-info {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+
+    .header-badge {
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 14px;
+      border-radius: 20px;
+      backdrop-filter: blur(4px);
+    }
+
+    .container {
+      max-width: 1850px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    /* タブナビゲーション */
+    .nav-tabs {
+      display: flex;
+      gap: 6px;
+      border-bottom: 2px solid var(--border-color);
+      margin-bottom: 20px;
+      background: #ffffff;
+      padding: 8px 12px 0 12px;
+      border-radius: var(--radius-md) var(--radius-md) 0 0;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tab-btn {
+      padding: 12px 20px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      border: none;
+      background: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    /* コントロールパネル */
+    .control-panel {
+      background-color: #ffffff;
+      padding: 14px 20px;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      margin-bottom: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    label {
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--text-main);
+    }
+
+    select, input[type="number"], input[type="text"] {
+      padding: 7px 11px;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background-color: #fff;
+    }
+
+    select:focus, input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* ボタンデザイン */
+    .btn {
+      padding: 7px 15px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-primary { background-color: var(--primary); color: white; }
+    .btn-primary:hover { background-color: var(--primary-hover); }
+    .btn-success { background-color: var(--success); color: white; }
+    .btn-success:hover { background-color: #059669; }
+    .btn-excel { background-color: #16a34a; color: white; }
+    .btn-excel:hover { background-color: #15803d; }
+    .btn-save { background-color: #0284c7; color: white; }
+    .btn-save:hover { background-color: #0369a1; }
+    .btn-load { background-color: #7c3aed; color: white; }
+    .btn-load:hover { background-color: #6d28d9; }
+    .btn-danger { background-color: var(--danger); color: white; }
+    .btn-danger:hover { background-color: #dc2626; }
+    .btn-secondary { background-color: #64748b; color: white; }
+    .btn-secondary:hover { background-color: #475569; }
+    .btn-outline { border: 1px solid var(--border-color); background-color: white; color: var(--text-main); }
+    .btn-outline:hover { background-color: #f8fafc; border-color: var(--border-hover); }
+
+    .save-status-text {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      background: #f1f5f9;
+      padding: 4px 10px;
+      border-radius: 12px;
+    }
+
+    /* バッジ定義 */
+    .cls-badge {
+      display: inline-block;
+      padding: 2px 5px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: #fff;
+      margin-right: 2px;
+    }
+    .cls-1  { background-color: #ef4444; }
+    .cls-2  { background-color: #f97316; }
+    .cls-3  { background-color: #f59e0b; }
+    .cls-4  { background-color: #84cc16; }
+    .cls-5  { background-color: #10b981; }
+    .cls-6  { background-color: #06b6d4; }
+    .cls-7  { background-color: #3b82f6; }
+    .cls-8  { background-color: #6366f1; }
+    .cls-9  { background-color: #8b5cf6; }
+    .cls-10 { background-color: #d946ef; }
+    .cls-11 { background-color: #ec4899; }
+    .cls-12 { background-color: #64748b; }
+
+    .flag-badge {
+      display: inline-block;
+      padding: 1px 5px;
+      border-radius: 3px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      margin: 1px;
+    }
+    .f-leader { background-color: #fef9c3; color: #854d0e; border: 1px solid #fde047; }
+    .f-atk    { background-color: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
+    .f-def    { background-color: #e0e7ff; color: #3730a3; border: 1px solid #a5b4fc; }
+    .f-care   { background-color: #dcfce7; color: #166534; border: 1px solid #86efac; }
+    .f-parent { background-color: #ffedd5; color: #9a3412; border: 1px solid #fdba74; }
+    .f-piano  { background-color: #fae8ff; color: #86198f; border: 1px solid #f0abfc; }
+
+    /* サマリー比較表 */
+    .summary-card {
+      background: #ffffff;
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+    }
+
+    .summary-card h3 {
+      font-size: 0.95rem;
+      color: var(--primary-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .summary-table-wrapper {
+      overflow-x: auto;
+    }
+
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.8rem;
+      text-align: center;
+    }
+
+    .summary-table th, .summary-table td {
+      padding: 5px 8px;
+      border: 1px solid var(--border-color);
+    }
+
+    .summary-table th {
+      background-color: #f8fafc;
+      color: var(--primary-dark);
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .summary-table tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    /* グリッドレイアウト（配置タブ） */
+    .class-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 18px;
+    }
+
+    .class-box {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      max-height: 85vh;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .class-box-header {
+      border-bottom: 2px solid var(--primary-light);
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+    }
+
+    .class-box-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .class-stats {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      font-weight: 600;
+    }
+
+    /* 男女セクション (DnDドロップエリア) */
+    .gender-section {
+      border-radius: var(--radius-md);
+      padding: 8px;
+      margin-bottom: 8px;
+      flex-grow: 1;
+      overflow-y: auto;
+      max-height: 36vh;
+      transition: all 0.2s ease;
+      border: 2px dashed transparent;
+    }
+
+    .gender-section.male-section {
+      background-color: var(--male-bg);
+      border-color: var(--male-border);
+    }
+
+    .gender-section.female-section {
+      background-color: var(--female-bg);
+      border-color: var(--female-border);
+    }
+
+    .gender-section.drag-over {
+      border-color: var(--primary) !important;
+      background-color: #dbeafe !important;
+      box-shadow: inset 0 0 10px rgba(37, 99, 235, 0.15);
+      transform: scale(1.01);
+    }
+
+    .gender-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+    }
+
+    /* 生徒カード */
+    .student-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      cursor: grab;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+      user-select: none;
+    }
+
+    .student-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--primary-hover);
+    }
+
+    .student-card:active {
+      cursor: grabbing;
+    }
+
+    .student-card.dragging {
+      opacity: 0.3;
+      transform: scale(0.95);
+    }
+
+    .student-card.highlighted {
+      border: 2px solid #f59e0b !important;
+      background-color: #fefce8 !important;
+      box-shadow: 0 0 12px rgba(245, 158, 11, 0.4) !important;
+      transform: scale(1.02);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+    }
+
+    .card-name {
+      font-size: 0.92rem;
+      color: var(--text-main);
+    }
+
+    .card-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-flags {
+      margin-top: 4px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 2px;
+    }
+
+    .pair-info {
+      font-size: 0.72rem;
+      color: #d97706;
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* ------------------------------------------
+       ★ 🗂️ 全体俯瞰・名簿一覧ビュー専用スタイル
+       ------------------------------------------ */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(420px, 1fr));
+      gap: 20px;
+    }
+
+    .overview-card {
+      background-color: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .overview-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+      margin-bottom: 10px;
+      border-bottom: 2px solid var(--primary-light);
+    }
+
+    .overview-card-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--primary-dark);
+    }
+
+    .overview-card-stats {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .overview-columns {
+      display: flex;
+      gap: 10px;
+    }
+
+    .overview-col {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .overview-col h4 {
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-bottom: 6px;
+    }
+
+    .overview-col.male h4 {
+      background-color: #e0f2fe;
+      color: #0369a1;
+    }
+
+    .overview-col.female h4 {
+      background-color: #fce7f3;
+      color: #be185d;
+    }
+
+    .overview-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    .overview-table th, .overview-table td {
+      border: 1px solid var(--border-color);
+      padding: 3px 5px;
+      text-align: left;
+    }
+
+    .overview-table th {
+      background-color: #f8fafc;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-align: center;
+    }
+
+    .overview-table tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    .class-select-inline {
+      padding: 1px 2px;
+      font-size: 0.72rem;
+      border: 1px solid var(--border-color);
+      border-radius: 3px;
+      background: white;
+    }
+
+    /* 警告領域 */
+    .alert-box {
+      background-color: #fef2f2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      margin-bottom: 16px;
+      font-size: 0.88rem;
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* テーブル表示 (編集タブ) */
+    .table-wrapper {
+      overflow-x: auto;
+      background: white;
+      border-radius: var(--radius-md);
+      box-shadow: var(--shadow-sm);
+      border: 1px solid var(--border-color);
+      max-height: 70vh;
+    }
+
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    table.data-table th, table.data-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    table.data-table th {
+      background-color: #f8fafc;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      color: var(--primary-dark);
+      font-weight: 700;
+    }
+
+    /* トースト通知 (Toast UI) */
+    #toastContainer {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      pointer-events: none;
+    }
+
+    .toast {
+      background: #0f172a;
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-md);
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      pointer-events: auto;
+      animation: toastIn 0.3s cubic-bezier(0.16, 1, 0.3, 1), toastOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) 2.7s forwards;
+    }
+
+    .toast-success { border-left: 4px solid var(--success); }
+    .toast-info    { border-left: 4px solid var(--primary); }
+    .toast-warning { border-left: 4px solid var(--warning); }
+
+    @keyframes toastIn {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @keyframes toastOut {
+      from { transform: translateY(0); opacity: 1; }
+      to { transform: translateY(20px); opacity: 0; }
+    }
+
+    .copyright-footer {
+      position: fixed;
+      bottom: 12px;
+      right: 20px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      background-color: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(4px);
+      padding: 4px 12px;
+      border-radius: 20px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow-sm);
+      z-index: 1000;
+    }
+
+    /* ==========================================
+       ★ 改修版 A3横向き 印刷スタイル定義 (1クラス1頁精密配置)
+       ========================================== */
+    @media print {
+      @page {
+        size: A3 landscape;
+        margin: 6mm 8mm;
+      }
+
+      *, *::before, *::after {
+        box-shadow: none !important;
+        text-shadow: none !important;
+      }
+
+      body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        padding: 0 !important;
+        font-size: 10pt;
+      }
+
+      header, .nav-tabs, .control-panel, .summary-card, .copyright-footer, #toastContainer, .no-print {
+        display: none !important;
+      }
+
+      .tab-content {
+        display: block !important;
+      }
+
+      #printContainer {
+        display: block !important;
+      }
+
+      .print-page {
+        page-break-after: always;
+        break-after: page;
+        height: 275mm; /* A3高さに精密ジャストフィット */
+        box-sizing: border-box;
+        padding: 4mm 6mm;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+
+      .print-header {
+        border-bottom: 2px solid #000;
+        padding-bottom: 4px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
+      }
+
+      .print-header h2 {
+        font-size: 1.6rem;
+        font-weight: bold;
+      }
+
+      .print-stats {
+        font-size: 0.95rem;
+      }
+
+      .print-columns {
+        display: flex;
+        gap: 16px;
+        flex-grow: 1;
+      }
+
+      .print-column {
+        flex: 1;
+      }
+
+      .print-column h3 {
+        font-size: 1.05rem;
+        margin-bottom: 4px;
+        padding: 3px 6px;
+        background-color: #e2e8f0 !important;
+        border: 1px solid #000;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.82rem;
+      }
+
+      .print-table th, .print-table td {
+        border: 1px solid #333;
+        padding: 4px 6px;
+        text-align: left;
+      }
+
+      .print-table th {
+        background-color: #f1f5f9 !important;
+        font-weight: bold;
+        -webkit-print-color-adjust: exact;
+      }
+
+      .print-footer-info {
+        margin-top: 6px;
+        font-size: 0.75rem;
+        text-align: right;
+        border-top: 1px solid #aaa;
+        padding-top: 2px;
+      }
+    }
+
+    #printContainer {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header>
+    <div>
+      <h1>クラス分け樽</h1>
+      <div class="sub-info">中学校向け 自動・手動クラス替え編成支援システム</div>
+    </div>
+    <div>
+      <span class="header-badge">
+        12クラス / 400名スケール対応
+      </span>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- ナビゲーションタブ -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('classViewTab')">🍱 クラス配置（ドラッグ＆ドロップ）</button>
+      <button class="tab-btn" onclick="switchTab('overviewTab')">🗂️ クラス別名簿（全体俯瞰・スクロールなし）</button>
+      <button class="tab-btn" onclick="switchTab('studentDataTab')">📋 生徒データ一覧・編集</button>
+      <button class="tab-btn" onclick="switchTab('importExportTab')">📂 Excel・CSV 入出力</button>
+    </div>
+
+    <!-- 1. クラス配置タブ (DnD) -->
+    <div id="classViewTab" class="tab-content active">
+      <div class="control-panel">
+        <div class="control-group">
+          <label for="classCountSelect">クラス数:</label>
+          <select id="classCountSelect" onchange="changeClassCount()">
+            <option value="2">2クラス</option>
+            <option value="3">3クラス</option>
+            <option value="4">4クラス</option>
+            <option value="5">5クラス</option>
+            <option value="6">6クラス</option>
+            <option value="7">7クラス</option>
+            <option value="8">8クラス</option>
+            <option value="9">9クラス</option>
+            <option value="10">10クラス</option>
+            <option value="11">11クラス</option>
+            <option value="12" selected>12クラス</option>
+          </select>
+
+          <!-- 並び替え順 -->
+          <label for="sortOrderSelect" style="margin-left:6px;">並び順:</label>
+          <select id="sortOrderSelect" onchange="changeSortOrder()">
+            <optgroup label="基本・学力・名前">
+              <option value="default" selected>優先条件・配慮順（標準）</option>
+              <option value="score">学力（高い順）</option>
+              <option value="name">氏名（五十音順）</option>
+              <option value="class1">1年組順</option>
+              <option value="class2">2年組順</option>
+            </optgroup>
+            <optgroup label="リーダー">
+              <option value="flagA">学年リーダー (A) 優先</option>
+              <option value="flagB">クラスリーダー (B) 優先</option>
+              <option value="flagC">班リーダー (C) 優先</option>
+            </optgroup>
+            <optgroup label="攻撃性">
+              <option value="flagXXX">かなり攻撃的 (XXX) 優先</option>
+              <option value="flagXX">攻撃的 (XX) 優先</option>
+              <option value="flagX">少し攻撃的 (X) 優先</option>
+            </optgroup>
+            <optgroup label="被攻撃性">
+              <option value="flagYYY">かなり被攻撃 (YYY) 優先</option>
+              <option value="flagYY">被攻撃 (YY) 優先</option>
+              <option value="flagY">少し被攻撃 (Y) 優先</option>
+            </optgroup>
+            <optgroup label="配慮が必要">
+              <option value="flagZZZ">かなり配慮必要 (ZZZ) 優先</option>
+              <option value="flagZZ">配慮必要 (ZZ) 優先</option>
+              <option value="flagZ">少し配慮必要 (Z) 優先</option>
+            </optgroup>
+            <optgroup label="保護者注意">
+              <option value="flagM">保護者かなり注意 (M) 優先</option>
+              <option value="flagm">保護者注意 (m) 優先</option>
+            </optgroup>
+            <optgroup label="ピアノ・特殊">
+              <option value="flagP">ピアノ得意 (P) 優先</option>
+              <option value="flagp">ピアノ経験あり (p) 優先</option>
+              <option value="flagU">いたらうれしい (U) 優先</option>
+            </optgroup>
+          </select>
+
+          <!-- クイック強調検索 -->
+          <input type="text" id="gridHighlightInput" placeholder="🔍 生徒強調検索..." oninput="highlightGridCards()" style="width:160px;">
+
+          <button class="btn btn-primary" onclick="runAutoAllocation()">
+            <span>⚡ 自動クラス分け最適化</span>
+          </button>
+          <button class="btn btn-save" onclick="saveToLocalStorage(true)">
+            <span>💾 保存</span>
+          </button>
+          <button class="btn btn-load" onclick="loadFromLocalStorage()">
+            <span>📂 復元</span>
+          </button>
+          <button class="btn btn-secondary" onclick="generateDummyData400()">
+            <span>🔄 ダミー生成</span>
+          </button>
+          <button class="btn btn-danger" onclick="deleteAllData()">
+            <span>🗑️ 全消去</span>
+          </button>
+        </div>
+
+        <div class="control-group">
+          <span class="save-status-text" id="saveStatusInfo">未保存</span>
+          <label style="font-size:0.85rem; font-weight:600; cursor:pointer; margin-left:6px;">
+            <input type="checkbox" id="maskingPrintCheckbox"> 🔒 会議用印刷
+          </label>
+          <button class="btn btn-excel" onclick="exportClassResultsExcel()">
+            <span>📊 Excel出力</span>
+          </button>
+          <button class="btn btn-success" onclick="prepareAndPrint()">
+            <span>🖨️ A3印刷</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- サマリー比較表 -->
+      <div class="summary-card">
+        <h3>📊 クラス間バランス比較サマリー（リアルタイム全項目詳細分析表）</h3>
+        <div class="summary-table-wrapper">
+          <table class="summary-table">
+            <thead>
+              <tr id="summaryHeaderRow"></tr>
+            </thead>
+            <tbody id="summaryTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 警告領域 -->
+      <div id="alertContainer"></div>
+
+      <!-- クラス一覧グリッド -->
+      <div id="classGrid" class="class-grid"></div>
+    </div>
+
+    <!-- 2. ★新設：クラス別名簿（全体俯瞰・スクロールなし）タブ -->
+    <div id="overviewTab" class="tab-content">
+      <div class="control-panel">
+        <div class="control-group">
+          <label for="overviewSortOrderSelect">一覧表示順:</label>
+          <select id="overviewSortOrderSelect" onchange="changeOverviewSortOrder()">
+            <optgroup label="基本・学力・名前">
+              <option value="default" selected>優先条件・配慮順（標準）</option>
+              <option value="score">学力（高い順）</option>
+              <option value="name">氏名（五十音順）</option>
+              <option value="class1">1年組順</option>
+              <option value="class2">2年組順</option>
+            </optgroup>
+            <optgroup label="リーダー">
+              <option value="flagA">学年リーダー (A) 優先</option>
+              <option value="flagB">クラスリーダー (B) 優先</option>
+              <option value="flagC">班リーダー (C) 優先</option>
+            </optgroup>
+            <optgroup label="攻撃性">
+              <option value="flagXXX">かなり攻撃的 (XXX) 優先</option>
+              <option value="flagXX">攻撃的 (XX) 優先</option>
+              <option value="flagX">少し攻撃的 (X) 優先</option>
+            </optgroup>
+            <optgroup label="被攻撃性">
+              <option value="flagYYY">かなり被攻撃 (YYY) 優先</option>
+              <option value="flagYY">被攻撃 (YY) 優先</option>
+              <option value="flagY">少し被攻撃 (Y) 優先</option>
+            </optgroup>
+            <optgroup label="配慮が必要">
+              <option value="flagZZZ">かなり配慮必要 (ZZZ) 優先</option>
+              <option value="flagZZ">配慮必要 (ZZ) 優先</option>
+              <option value="flagZ">少し配慮必要 (Z) 優先</option>
+            </optgroup>
+            <optgroup label="保護者注意">
+              <option value="flagM">保護者かなり注意 (M) 優先</option>
+              <option value="flagm">保護者注意 (m) 優先</option>
+            </optgroup>
+            <optgroup label="ピアノ・特殊">
+              <option value="flagP">ピアノ得意 (P) 優先</option>
+              <option value="flagp">ピアノ経験あり (p) 優先</option>
+              <option value="flagU">いたらうれしい (U) 優先</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="control-group">
+          <button class="btn btn-excel" onclick="exportClassResultsExcel()">📊 Excel出力</button>
+          <button class="btn btn-success" onclick="prepareAndPrint()">🖨️ A3判 印刷実行</button>
+        </div>
+      </div>
+
+      <!-- リアルタイム更新型 一覧グリッド -->
+      <div id="overviewGrid" class="overview-grid"></div>
+    </div>
+
+    <!-- 3. 生徒データ一覧タブ -->
+    <div id="studentDataTab" class="tab-content">
+      <div class="control-panel">
+        <div class="control-group">
+          <input type="text" id="searchInput" placeholder="名前・元クラス・条件で検索..." oninput="filterStudentTable()" style="width:260px;">
+          <span id="studentCountBadge" style="font-size:0.9rem; font-weight:bold;">全 0 名</span>
+        </div>
+        <div class="control-group">
+          <button class="btn btn-outline" onclick="addNewStudent()">＋ 生徒追加</button>
+          <button class="btn btn-save" onclick="saveToLocalStorage(true)">💾 瞬時保存</button>
+          <button class="btn btn-load" onclick="loadFromLocalStorage()">📂 瞬時復元</button>
+          <button class="btn btn-danger" onclick="deleteAllData()">🗑️ 全削除</button>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="data-table" id="studentDataTable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>氏名</th>
+              <th>性別</th>
+              <th>学力(点)</th>
+              <th>1年組</th>
+              <th>2年組</th>
+              <th>リーダー</th>
+              <th>攻撃性</th>
+              <th>被攻撃</th>
+              <th>配慮</th>
+              <th>保護者</th>
+              <th>ピアノ</th>
+              <th>いたらうれしい</th>
+              <th>つける生徒</th>
+              <th>離す生徒</th>
+              <th>新クラス</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="studentTableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- 4. 入出力タブ -->
+    <div id="importExportTab" class="tab-content">
+      <div class="control-panel" style="flex-direction:column; align-items:flex-start; gap:20px;">
+        <div style="width:100%;">
+          <h3>💾 ブラウザ内データ瞬時保存・復元</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin: 6px 0 12px 0;">
+            お使いのブラウザ内（ローカルストレージ）へ瞬時に現在の状態を保持します。
+          </p>
+          <button class="btn btn-save" onclick="saveToLocalStorage(true)" style="margin-right:10px;">💾 今の状態を即時保存</button>
+          <button class="btn btn-load" onclick="loadFromLocalStorage()">📂 前回保存した状態に復元</button>
+        </div>
+
+        <hr style="width:100%; border:none; border-top:1px solid var(--border-color);">
+
+        <div style="width:100%;">
+          <h3>📊 クラス分け結果 Excel/CSV出力</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin: 6px 0 12px 0;">
+            クラス別の名簿と集計情報を含んだBOM付きCSVファイル（Excel対応）を出力します。
+          </p>
+          <button class="btn btn-excel" onclick="exportClassResultsExcel()">クラス分け結果をExcel/CSV出力</button>
+        </div>
+
+        <hr style="width:100%; border:none; border-top:1px solid var(--border-color);">
+
+        <div style="width:100%;">
+          <h3>📥 CSVデータ インポート</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin: 6px 0 12px 0;">
+            生徒データのCSVを取り込みます：<br>
+            <code>氏名,性別,学力,1年組,2年組,学年リーダーA,クラスリーダーB,班リーダーC,かなり攻撃的XXX,攻撃的XX,少し攻撃的X,かなりやられるYYY,やられるYY,やられそうY,かなり配慮必要ZZZ,配慮必要ZZ,少し配慮必要Z,保護者かなり注意M,保護者注意m,ピアノやりそうP,ピアノできそうp,いたらうれしいU,つける相手,離す相手</code>
+          </p>
+          <input type="file" id="csvFileInput" accept=".csv" style="margin-bottom:10px;">
+          <br>
+          <button class="btn btn-primary" onclick="importCSV()">CSVファイルを読み込む</button>
+        </div>
+
+        <hr style="width:100%; border:none; border-top:1px solid var(--border-color);">
+
+        <div style="width:100%;">
+          <h3>📤 全生徒データ CSV保存</h3>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin: 6px 0 12px 0;">
+            現在の全生徒データおよび割り当てクラスを次回編集用のマスターCSVとして保存します。
+          </p>
+          <button class="btn btn-success" onclick="exportCSV()">全生徒データCSVを保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- トースト通知コンテナ -->
+  <div id="toastContainer"></div>
+
+  <!-- 印刷コンテナ -->
+  <div id="printContainer"></div>
+
+  <div class="copyright-footer">
+    ©2026 t-suzuki
+  </div>
+
+  <script>
+    /* ==========================================
+       1. データモデル & 初期化
+       ========================================== */
+    let students = [];
+    let currentClassCount = 12;
+    let currentSortOrder = 'default';
+    let overviewSortOrder = 'default';
+    const STORAGE_KEY = 'kurasuwake_app_saved_data_v2';
+
+    window.onload = function() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        try {
+          loadFromLocalStorage(true);
+        } catch(e) {
+          generateDummyData400();
+        }
+      } else {
+        generateDummyData400();
+      }
+    };
+
+    /* トーストUI */
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      
+      let icon = 'ℹ️';
+      if (type === 'success') icon = '✅';
+      if (type === 'warning') icon = '⚠️';
+
+      toast.innerHTML = `<span>${icon}</span> <span>${message}</span>`;
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    /* ローカルストレージ 瞬時保存・復元 */
+    function saveToLocalStorage(showNotify = false) {
+      const dataToSave = {
+        classCount: currentClassCount,
+        students: students,
+        savedAt: new Date().toLocaleString('ja-JP')
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(dataToSave));
+      updateSaveStatusInfo(dataToSave.savedAt);
+      if (showNotify) {
+        showToast('データをブラウザに保存しました！', 'success');
+      }
+    }
+
+    function loadFromLocalStorage(isInitial = false) {
+      const rawData = localStorage.getItem(STORAGE_KEY);
+      if (!rawData) {
+        if (!isInitial) showToast('保存されたデータが見つかりません。', 'warning');
+        return;
+      }
+      try {
+        const parsed = JSON.parse(rawData);
+        currentClassCount = parsed.classCount || 12;
+        document.getElementById('classCountSelect').value = currentClassCount;
+        students = parsed.students || [];
+        renderAll();
+        updateSaveStatusInfo(parsed.savedAt || '保存済み');
+        if (!isInitial) {
+          showToast('保存データを復元しました。', 'info');
+        }
+      } catch (e) {
+        showToast('保存データの復元に失敗しました。', 'warning');
+      }
+    }
+
+    function updateSaveStatusInfo(timeStr) {
+      const statusEl = document.getElementById('saveStatusInfo');
+      if (statusEl) {
+        statusEl.textContent = `最終保存: ${timeStr || '未保存'}`;
+      }
+    }
+
+    /* 400名ダミー生成 */
+    function generateDummyData400() {
+      const familyNames = ['佐藤', '鈴木', '高橋', '田中', '伊藤', '渡辺', '山本', '中村', '小林', '加藤', '吉田', '山田', '佐々木', '山口', '松本', '井上', '木村', '林', '斎藤', '清水', '山崎', '森', '池田', '橋本', '阿部', '石川', '山下', '中島', '石井', '小川'];
+      const maleNames = ['蓮', '陽翔', '湊', '悠真', '樹', '陽太', '大翔', '律', '陸', '翔太', '颯太', '大和', '誠', '拓海', '健太', '翼', '亮', '悠斗'];
+      const femaleNames = ['葵', '陽葵', '莉子', '芽依', '咲良', '結菜', '結衣', '凛', '桜', '美月', '心春', '彩華', '七海', '楓', '優奈', '未来'];
+
+      students = [];
+      let idCounter = 1;
+
+      for (let i = 0; i < 400; i++) {
+        const gender = (i % 2 === 0) ? '男' : '女';
+        const fn = familyNames[Math.floor(Math.random() * familyNames.length)];
+        const mn = (gender === '男') ? maleNames[Math.floor(Math.random() * maleNames.length)] : femaleNames[Math.floor(Math.random() * femaleNames.length)];
+        
+        const score = Math.min(100, Math.max(20, Math.floor(65 + (Math.random() + Math.random() - 1) * 25)));
+        const c1 = `${Math.floor(Math.random() * 12) + 1}組`;
+        const c2 = `${Math.floor(Math.random() * 12) + 1}組`;
+
+        let fA = Math.random() < 0.03;
+        let fB = !fA && Math.random() < 0.06;
+        let fC = !fA && !fB && Math.random() < 0.1;
+
+        let fXXX = Math.random() < 0.02;
+        let fXX  = !fXXX && Math.random() < 0.04;
+        let fX   = !fXXX && !fXX && Math.random() < 0.08;
+
+        let fYYY = Math.random() < 0.02;
+        let fYY  = !fYYY && Math.random() < 0.04;
+        let fY   = !fYYY && !fYY && Math.random() < 0.08;
+
+        let fZZZ = Math.random() < 0.02;
+        let fZZ  = !fZZZ && Math.random() < 0.04;
+        let fZ   = !fZZZ && !fZZ && Math.random() < 0.08;
+
+        let fM = Math.random() < 0.02;
+        let fm = !fM && Math.random() < 0.05;
+
+        let fP = Math.random() < 0.04;
+        let fp = !fP && Math.random() < 0.08;
+
+        let fU = Math.random() < 0.06;
+
+        students.push({
+          id: idCounter++,
+          name: `${fn} ${mn}`,
+          gender: gender,
+          score: score,
+          class1: c1,
+          class2: c2,
+          flagA: fA, flagB: fB, flagC: fC,
+          flagXXX: fXXX, flagXX: fXX, flagX: fX,
+          flagYYY: fYYY, flagYY: fYY, flagY: fY,
+          flagZZZ: fZZZ, flagZZ: fZZ, flagZ: fZ,
+          flagM: fM, flagm: fm,
+          flagP: fP, flagp: fp,
+          flagU: fU,
+          pairAttach: '',
+          pairDetach: '',
+          assignedClass: Math.floor(Math.random() * currentClassCount) + 1
+        });
+      }
+
+      for (let k = 0; k < 10; k++) {
+        let idx1 = Math.floor(Math.random() * 400);
+        let idx2 = Math.floor(Math.random() * 400);
+        if (idx1 !== idx2) students[idx1].pairDetach = students[idx2].name;
+      }
+      for (let k = 0; k < 8; k++) {
+        let idx1 = Math.floor(Math.random() * 400);
+        let idx2 = Math.floor(Math.random() * 400);
+        if (idx1 !== idx2) students[idx1].pairAttach = students[idx2].name;
+      }
+
+      renderAll();
+      saveToLocalStorage(false);
+      showToast('400名分のダミーデータを生成しました！', 'info');
+    }
+
+    function deleteAllData() {
+      if (confirm('⚠️ 本当に全生徒データを削除しますか？')) {
+        students = [];
+        localStorage.removeItem(STORAGE_KEY);
+        renderAll();
+        updateSaveStatusInfo('データ消去済み');
+        showToast('すべてのデータを削除しました。', 'warning');
+      }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+      if (tabId === 'classViewTab') {
+        document.querySelectorAll('.tab-btn')[0].classList.add('active');
+        document.getElementById('classViewTab').classList.add('active');
+        renderClassGrid();
+      } else if (tabId === 'overviewTab') {
+        document.querySelectorAll('.tab-btn')[1].classList.add('active');
+        document.getElementById('overviewTab').classList.add('active');
+        renderOverviewGrid();
+      } else if (tabId === 'studentDataTab') {
+        document.querySelectorAll('.tab-btn')[2].classList.add('active');
+        document.getElementById('studentDataTab').classList.add('active');
+        renderStudentTable();
+      } else if (tabId === 'importExportTab') {
+        document.querySelectorAll('.tab-btn')[3].classList.add('active');
+        document.getElementById('importExportTab').classList.add('active');
+      }
+    }
+
+    function changeClassCount() {
+      currentClassCount = parseInt(document.getElementById('classCountSelect').value);
+      students.forEach(s => {
+        if (s.assignedClass > currentClassCount) {
+          s.assignedClass = Math.floor(Math.random() * currentClassCount) + 1;
+        }
+      });
+      renderAll();
+      saveToLocalStorage(false);
+    }
+
+    function changeSortOrder() {
+      currentSortOrder = document.getElementById('sortOrderSelect').value;
+      renderClassGrid();
+    }
+
+    function changeOverviewSortOrder() {
+      overviewSortOrder = document.getElementById('overviewSortOrderSelect').value;
+      renderOverviewGrid();
+    }
+
+    function renderAll() {
+      renderSummaryTable();
+      renderClassGrid();
+      renderOverviewGrid();
+      renderStudentTable();
+      checkConstraints();
+      highlightGridCards();
+    }
+
+    /* クイック強調検索 */
+    function highlightGridCards() {
+      const query = document.getElementById('gridHighlightInput')?.value.trim().toLowerCase();
+      const cards = document.querySelectorAll('.student-card');
+      
+      cards.forEach(card => {
+        if (!query) {
+          card.classList.remove('highlighted');
+          return;
+        }
+        const text = card.textContent.toLowerCase();
+        if (text.includes(query)) {
+          card.classList.add('highlighted');
+        } else {
+          card.classList.remove('highlighted');
+        }
+      });
+    }
+
+    /* ==========================================
+       2. サマリー比較表
+       ========================================== */
+    function renderSummaryTable() {
+      const headerRow = document.getElementById('summaryHeaderRow');
+      const tbody = document.getElementById('summaryTableBody');
+
+      let headers = ['項目'];
+      for (let c = 1; c <= currentClassCount; c++) {
+        headers.push(`${c}組`);
+      }
+      headers.push('全体平均/合計');
+
+      headerRow.innerHTML = headers.map(h => `<th>${h}</th>`).join('');
+
+      let stats = [];
+      for (let c = 1; c <= currentClassCount; c++) {
+        let clsList = students.filter(s => s.assignedClass === c);
+        let m = clsList.filter(s => s.gender === '男').length;
+        let f = clsList.filter(s => s.gender === '女').length;
+        let avg = clsList.length > 0 ? (clsList.reduce((sum, s) => sum + s.score, 0) / clsList.length).toFixed(1) : 0;
+        
+        let ldrA = clsList.filter(s => s.flagA).length;
+        let ldrB = clsList.filter(s => s.flagB).length;
+        let ldrC = clsList.filter(s => s.flagC).length;
+        
+        let atkXXX = clsList.filter(s => s.flagXXX).length;
+        let atkXX_X = clsList.filter(s => s.flagXX || s.flagX).length;
+        
+        let defYYY = clsList.filter(s => s.flagYYY).length;
+        let defYY_Y = clsList.filter(s => s.flagYY || s.flagY).length;
+        
+        let careZZZ = clsList.filter(s => s.flagZZZ).length;
+        let careZZ_Z = clsList.filter(s => s.flagZZ || s.flagZ).length;
+        
+        let parentM = clsList.filter(s => s.flagM).length;
+        let parentm = clsList.filter(s => s.flagm).length;
+
+        let pianoP = clsList.filter(s => s.flagP).length;
+        let pianop = clsList.filter(s => s.flagp).length;
+        let gladU = clsList.filter(s => s.flagU).length;
+
+        stats.push({ count: clsList.length, m, f, avg, ldrA, ldrB, ldrC, atkXXX, atkXX_X, defYYY, defYY_Y, careZZZ, careZZ_Z, parentM, parentm, pianoP, pianop, gladU });
+      }
+
+      let totalM = stats.reduce((sum, s) => sum + s.m, 0);
+      let totalF = stats.reduce((sum, s) => sum + s.f, 0);
+      let overallAvg = students.length > 0 ? (students.reduce((sum, s) => sum + s.score, 0) / students.length).toFixed(1) : 0;
+      let totalLdrA = stats.reduce((sum, s) => sum + s.ldrA, 0);
+      let totalLdrB = stats.reduce((sum, s) => sum + s.ldrB, 0);
+      let totalLdrC = stats.reduce((sum, s) => sum + s.ldrC, 0);
+      let totalAtkXXX = stats.reduce((sum, s) => sum + s.atkXXX, 0);
+      let totalAtkXX_X = stats.reduce((sum, s) => sum + s.atkXX_X, 0);
+      let totalDefYYY = stats.reduce((sum, s) => sum + s.defYYY, 0);
+      let totalDefYY_Y = stats.reduce((sum, s) => sum + s.defYY_Y, 0);
+      let totalCareZZZ = stats.reduce((sum, s) => sum + s.careZZZ, 0);
+      let totalCareZZ_Z = stats.reduce((sum, s) => sum + s.careZZ_Z, 0);
+      let totalParentM = stats.reduce((sum, s) => sum + s.parentM, 0);
+      let totalParentm = stats.reduce((sum, s) => sum + s.parentm, 0);
+      let totalPianoP = stats.reduce((sum, s) => sum + s.pianoP, 0);
+      let totalPianop = stats.reduce((sum, s) => sum + s.pianop, 0);
+      let totalGladU = stats.reduce((sum, s) => sum + s.gladU, 0);
+
+      tbody.innerHTML = `
+        <tr>
+          <td><strong>人数 (男/女)</strong></td>
+          ${stats.map(s => `<td>${s.count} (${s.m}/${s.f})</td>`).join('')}
+          <td><strong>${students.length} (${totalM}/${totalF})</strong></td>
+        </tr>
+        <tr>
+          <td><strong>学力平均点</strong></td>
+          ${stats.map(s => `<td><strong>${s.avg}</strong></td>`).join('')}
+          <td><strong>${overallAvg}</strong></td>
+        </tr>
+        <tr>
+          <td><strong>学年リーダー (A)</strong></td>
+          ${stats.map(s => `<td>${s.ldrA}</td>`).join('')}
+          <td>${totalLdrA}</td>
+        </tr>
+        <tr>
+          <td><strong>クラスリーダー (B)</strong></td>
+          ${stats.map(s => `<td>${s.ldrB}</td>`).join('')}
+          <td>${totalLdrB}</td>
+        </tr>
+        <tr>
+          <td><strong>班リーダー (C)</strong></td>
+          ${stats.map(s => `<td>${s.ldrC}</td>`).join('')}
+          <td>${totalLdrC}</td>
+        </tr>
+        <tr>
+          <td><strong>かなり攻撃的 (XXX)</strong></td>
+          ${stats.map(s => `<td>${s.atkXXX}</td>`).join('')}
+          <td>${totalAtkXXX}</td>
+        </tr>
+        <tr>
+          <td><strong>攻撃的/少し (XX/X)</strong></td>
+          ${stats.map(s => `<td>${s.atkXX_X}</td>`).join('')}
+          <td>${totalAtkXX_X}</td>
+        </tr>
+        <tr>
+          <td><strong>かなり被攻撃 (YYY)</strong></td>
+          ${stats.map(s => `<td><strong>${s.defYYY}</strong></td>`).join('')}
+          <td><strong>${totalDefYYY}</strong></td>
+        </tr>
+        <tr>
+          <td><strong>被攻撃/少し (YY/Y)</strong></td>
+          ${stats.map(s => `<td>${s.defYY_Y}</td>`).join('')}
+          <td>${totalDefYY_Y}</td>
+        </tr>
+        <tr>
+          <td><strong>かなり配慮必要 (ZZZ)</strong></td>
+          ${stats.map(s => `<td>${s.careZZZ}</td>`).join('')}
+          <td>${totalCareZZZ}</td>
+        </tr>
+        <tr>
+          <td><strong>配慮必要/少し (ZZ/Z)</strong></td>
+          ${stats.map(s => `<td>${s.careZZ_Z}</td>`).join('')}
+          <td>${totalCareZZ_Z}</td>
+        </tr>
+        <tr>
+          <td><strong>保護者かなり注意 (M)</strong></td>
+          ${stats.map(s => `<td><strong>${s.parentM}</strong></td>`).join('')}
+          <td><strong>${totalParentM}</strong></td>
+        </tr>
+        <tr>
+          <td><strong>保護者注意 (m)</strong></td>
+          ${stats.map(s => `<td>${s.parentm}</td>`).join('')}
+          <td>${totalParentm}</td>
+        </tr>
+        <tr>
+          <td><strong>ピアノ得意 (P)</strong></td>
+          ${stats.map(s => `<td><strong>${s.pianoP}</strong></td>`).join('')}
+          <td><strong>${totalPianoP}</strong></td>
+        </tr>
+        <tr>
+          <td><strong>ピアノ経験あり (p)</strong></td>
+          ${stats.map(s => `<td>${s.pianop}</td>`).join('')}
+          <td>${totalPianop}</td>
+        </tr>
+        <tr>
+          <td><strong>いたらうれしい (U)</strong></td>
+          ${stats.map(s => `<td>${s.gladU}</td>`).join('')}
+          <td>${totalGladU}</td>
+        </tr>
+      `;
+    }
+
+    /* ==========================================
+       3. 整列順序（全項目動的ソート機能）
+       ========================================== */
+    function getStudentSortRank(s) {
+      if (s.flagA) return 1;
+      if (s.flagB) return 2;
+      if (s.flagC) return 3;
+      if (s.flagXXX) return 4;
+      if (s.flagXX)  return 5;
+      if (s.flagX)   return 6;
+      if (s.flagYYY) return 7;
+      if (s.flagYY)  return 8;
+      if (s.flagY)   return 9;
+      if (s.flagZZZ) return 10;
+      if (s.flagZZ)  return 11;
+      if (s.flagZ)   return 12;
+      if (s.flagP)   return 13;
+      if (s.flagp)   return 14;
+      return 99;
+    }
+
+    function sortStudentsCustom(list, orderType) {
+      let copy = [...list];
+
+      if (orderType === 'score') {
+        return copy.sort((a, b) => b.score - a.score || a.name.localeCompare(b.name, 'ja'));
+      }
+      if (orderType === 'name') {
+        return copy.sort((a, b) => a.name.localeCompare(b.name, 'ja'));
+      }
+      if (orderType === 'class1') {
+        return copy.sort((a, b) => (parseInt(a.class1) || 99) - (parseInt(b.class1) || 99) || b.score - a.score);
+      }
+      if (orderType === 'class2') {
+        return copy.sort((a, b) => (parseInt(a.class2) || 99) - (parseInt(b.class2) || 99) || b.score - a.score);
+      }
+      if (orderType === 'default') {
+        return copy.sort((a, b) => {
+          let rankA = getStudentSortRank(a);
+          let rankB = getStudentSortRank(b);
+          if (rankA !== rankB) return rankA - rankB;
+          return b.score - a.score;
+        });
+      }
+
+      if (orderType.startsWith('flag')) {
+        const flagKey = orderType;
+        return copy.sort((a, b) => {
+          const valA = a[flagKey] ? 1 : 0;
+          const valB = b[flagKey] ? 1 : 0;
+          if (valA !== valB) return valB - valA;
+          return b.score - a.score;
+        });
+      }
+
+      return copy;
+    }
+
+    function sortStudents(list) {
+      return sortStudentsCustom(list, currentSortOrder);
+    }
+
+    /* ==========================================
+       4. クラスグリッド表示 & Drag and Drop (配置タブ)
+       ========================================== */
+    function renderClassGrid() {
+      const grid = document.getElementById('classGrid');
+      grid.innerHTML = '';
+
+      for (let c = 1; c <= currentClassCount; c++) {
+        const classStudents = students.filter(s => s.assignedClass === c);
+        
+        let maleList = sortStudents(classStudents.filter(s => s.gender === '男'));
+        let femaleList = sortStudents(classStudents.filter(s => s.gender === '女'));
+
+        const avgScore = classStudents.length > 0 
+          ? (classStudents.reduce((sum, s) => sum + s.score, 0) / classStudents.length).toFixed(1) 
+          : 0;
+
+        const box = document.createElement('div');
+        box.className = 'class-box';
+        box.dataset.classId = c;
+
+        let maleCardsHTML = maleList.map(s => createStudentCardHTML(s)).join('');
+        let femaleCardsHTML = femaleList.map(s => createStudentCardHTML(s)).join('');
+
+        box.innerHTML = `
+          <div class="class-box-header">
+            <div class="class-box-title">
+              <span>${c}組</span>
+              <span style="font-size:0.95rem; color:var(--primary); font-weight:800;">${classStudents.length}名</span>
+            </div>
+            <div class="class-stats">
+              <span>男: ${maleList.length}</span>
+              <span>女: ${femaleList.length}</span>
+              <span>平均: ${avgScore}点</span>
+            </div>
+          </div>
+
+          <div class="gender-section male-section" data-class-id="${c}" 
+               ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+            <div class="gender-title">
+              <span>👦 男子 (${maleList.length}名)</span>
+            </div>
+            ${maleCardsHTML}
+          </div>
+
+          <div class="gender-section female-section" data-class-id="${c}" 
+               ondragover="handleDragOver(event)" ondragenter="handleDragEnter(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
+            <div class="gender-title">
+              <span>👧 女子 (${femaleList.length}名)</span>
+            </div>
+            ${femaleCardsHTML}
+          </div>
+        `;
+
+        grid.appendChild(box);
+      }
+      highlightGridCards();
+    }
+
+    function getClassNumColorClass(classStr) {
+      if (!classStr) return 'cls-12';
+      const num = parseInt(classStr.replace(/[^0-9]/g, ''));
+      if (isNaN(num) || num < 1 || num > 12) return 'cls-12';
+      return `cls-${num}`;
+    }
+
+    function createStudentCardHTML(s) {
+      let flagsHTML = '';
+      if (s.flagA) flagsHTML += `<span class="flag-badge f-leader">リーダーA</span>`;
+      if (s.flagB) flagsHTML += `<span class="flag-badge f-leader">リーダーB</span>`;
+      if (s.flagC) flagsHTML += `<span class="flag-badge f-leader">リーダーC</span>`;
+
+      if (s.flagXXX) flagsHTML += `<span class="flag-badge f-atk">攻撃XXX</span>`;
+      if (s.flagXX)  flagsHTML += `<span class="flag-badge f-atk">攻撃XX</span>`;
+      if (s.flagX)   flagsHTML += `<span class="flag-badge f-atk">攻撃X</span>`;
+
+      if (s.flagYYY) flagsHTML += `<span class="flag-badge f-def">被攻撃YYY</span>`;
+      if (s.flagYY)  flagsHTML += `<span class="flag-badge f-def">被攻撃YY</span>`;
+      if (s.flagY)   flagsHTML += `<span class="flag-badge f-def">被攻撃Y</span>`;
+
+      if (s.flagZZZ) flagsHTML += `<span class="flag-badge f-care">配慮ZZZ</span>`;
+      if (s.flagZZ)  flagsHTML += `<span class="flag-badge f-care">配慮ZZ</span>`;
+      if (s.flagZ)   flagsHTML += `<span class="flag-badge f-care">配慮Z</span>`;
+
+      if (s.flagM) flagsHTML += `<span class="flag-badge f-parent">保護者M</span>`;
+      if (s.flagm) flagsHTML += `<span class="flag-badge f-parent">保護者m</span>`;
+
+      if (s.flagP) flagsHTML += `<span class="flag-badge f-piano">ピアノP</span>`;
+      if (s.flagp) flagsHTML += `<span class="flag-badge f-piano">ピアノp</span>`;
+
+      let pairHTML = '';
+      if (s.pairAttach) pairHTML += `<div>🔗 離さない: ${escapeHTML(s.pairAttach)}</div>`;
+      if (s.pairDetach) pairHTML += `<div>✂️ 離す: ${escapeHTML(s.pairDetach)}</div>`;
+
+      const c1Class = getClassNumColorClass(s.class1);
+      const c2Class = getClassNumColorClass(s.class2);
+
+      return `
+        <div class="student-card" draggable="true" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" data-student-id="${s.id}">
+          <div class="card-top">
+            <span class="card-name">${escapeHTML(s.name)}</span>
+            <span style="font-size:0.8rem; color:${s.gender === '男' ? '#2563eb' : '#ec4899'}; font-weight:700;">${s.score}点</span>
+          </div>
+          <div class="card-meta">
+            <div>
+              <span class="cls-badge ${c1Class}">1年:${s.class1}</span>
+              <span class="cls-badge ${c2Class}">2年:${s.class2}</span>
+            </div>
+          </div>
+          ${flagsHTML ? `<div class="card-flags">${flagsHTML}</div>` : ''}
+          ${pairHTML ? `<div class="pair-info">${pairHTML}</div>` : ''}
+        </div>
+      `;
+    }
+
+    /* ドラッグ＆ドロップ用ハンドラ */
+    let draggedStudentId = null;
+
+    function handleDragStart(e) {
+      draggedStudentId = parseInt(e.currentTarget.dataset.studentId);
+      e.dataTransfer.setData('text/plain', draggedStudentId);
+      e.currentTarget.classList.add('dragging');
+    }
+
+    function handleDragEnd(e) {
+      e.currentTarget.classList.remove('dragging');
+      document.querySelectorAll('.gender-section').forEach(sec => sec.classList.remove('drag-over'));
+    }
+
+    function handleDragOver(e) { e.preventDefault(); }
+    function handleDragEnter(e) {
+      e.preventDefault();
+      const section = e.currentTarget.closest('.gender-section');
+      if (section) section.classList.add('drag-over');
+    }
+
+    function handleDragLeave(e) {
+      const section = e.currentTarget.closest('.gender-section');
+      if (section && !section.contains(e.relatedTarget)) {
+        section.classList.remove('drag-over');
+      }
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      const targetSection = e.currentTarget.closest('.gender-section') || e.currentTarget.closest('.class-box');
+      if (!targetSection || !draggedStudentId) return;
+
+      targetSection.classList.remove('drag-over');
+
+      const newClassId = parseInt(targetSection.dataset.classId);
+      const student = students.find(s => s.id === draggedStudentId);
+      if (student && student.assignedClass !== newClassId) {
+        student.assignedClass = newClassId;
+        renderAll();
+        saveToLocalStorage(false);
+        showToast(`${student.name} を ${newClassId}組 へ移動しました。`, 'info');
+      }
+      draggedStudentId = null;
+    }
+
+    /* ==========================================
+       5. ★ 新設：クラス別名簿（全体俯瞰・スクロールなし）描画
+       ========================================== */
+    function renderOverviewGrid() {
+      const overviewGrid = document.getElementById('overviewGrid');
+      if (!overviewGrid) return;
+      overviewGrid.innerHTML = '';
+
+      for (let c = 1; c <= currentClassCount; c++) {
+        const classStudents = students.filter(s => s.assignedClass === c);
+        
+        let maleList = sortStudentsCustom(classStudents.filter(s => s.gender === '男'), overviewSortOrder);
+        let femaleList = sortStudentsCustom(classStudents.filter(s => s.gender === '女'), overviewSortOrder);
+
+        const avgScore = classStudents.length > 0 
+          ? (classStudents.reduce((sum, s) => sum + s.score, 0) / classStudents.length).toFixed(1) 
+          : 0;
+
+        const card = document.createElement('div');
+        card.className = 'overview-card';
+
+        function buildOverviewTableRows(list) {
+          return list.map((s, idx) => {
+            let flags = [];
+            if (s.flagA) flags.push('A'); if (s.flagB) flags.push('B'); if (s.flagC) flags.push('C');
+            if (s.flagXXX) flags.push('XXX'); if (s.flagXX) flags.push('XX'); if (s.flagX) flags.push('X');
+            if (s.flagYYY) flags.push('YYY'); if (s.flagYY) flags.push('YY'); if (s.flagY) flags.push('Y');
+            if (s.flagZZZ) flags.push('ZZZ'); if (s.flagZZ) flags.push('ZZ'); if (s.flagZ) flags.push('Z');
+            if (s.flagM) flags.push('M'); if (s.flagm) flags.push('m');
+            if (s.flagP) flags.push('P'); if (s.flagp) flags.push('p');
+            if (s.flagU) flags.push('U');
+
+            let classOptions = '';
+            for (let i = 1; i <= currentClassCount; i++) {
+              classOptions += `<option value="${i}" ${s.assignedClass === i ? 'selected' : ''}>${i}組</option>`;
+            }
+
+            return `
+              <tr>
+                <td style="text-align:center; width:22px;">${idx + 1}</td>
+                <td style="font-weight:bold;">${escapeHTML(s.name)}</td>
+                <td style="text-align:center; width:34px;">${s.score}</td>
+                <td style="text-align:center; width:34px;">${s.class2}</td>
+                <td style="font-size:0.7rem; color:var(--text-muted);">${flags.join('')}</td>
+                <td style="text-align:center; width:46px;" class="no-print">
+                  <select class="class-select-inline" onchange="updateStudentClassInline(${s.id}, parseInt(this.value))">
+                    ${classOptions}
+                  </select>
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        card.innerHTML = `
+          <div class="overview-card-header">
+            <div class="overview-card-title">${c}組 名簿</div>
+            <div class="overview-card-stats">
+              計 ${classStudents.length}名 (男:${maleList.length} 女:${femaleList.length}) | 平均:${avgScore}点
+            </div>
+          </div>
+          <div class="overview-columns">
+            <div class="overview-col male">
+              <h4>👦 男子 (${maleList.length}名)</h4>
+              <table class="overview-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>氏名</th>
+                    <th>点</th>
+                    <th>2年</th>
+                    <th>条件</th>
+                    <th class="no-print">組</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${buildOverviewTableRows(maleList)}
+                </tbody>
+              </table>
+            </div>
+
+            <div class="overview-col female">
+              <h4>👧 女子 (${femaleList.length}名)</h4>
+              <table class="overview-table">
+                <thead>
+                  <tr>
+                    <th>No</th>
+                    <th>氏名</th>
+                    <th>点</th>
+                    <th>2年</th>
+                    <th>条件</th>
+                    <th class="no-print">組</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${buildOverviewTableRows(femaleList)}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        `;
+
+        overviewGrid.appendChild(card);
+      }
+    }
+
+    function updateStudentClassInline(id, newClass) {
+      const s = students.find(item => item.id === id);
+      if (s) {
+        s.assignedClass = newClass;
+        renderAll();
+        saveToLocalStorage(false);
+        showToast(`${s.name} を ${newClass}組 へ変更しました。`, 'info');
+      }
+    }
+
+    /* ==========================================
+       6. 自動クラス分け最適化
+       ========================================== */
+    function runAutoAllocation() {
+      if (students.length === 0) {
+        showToast('生徒データがありません。', 'warning');
+        return;
+      }
+
+      let males = students.filter(s => s.gender === '男').sort((a, b) => getStudentSortRank(a) - getStudentSortRank(b) || b.score - a.score);
+      let females = students.filter(s => s.gender === '女').sort((a, b) => getStudentSortRank(a) - getStudentSortRank(b) || b.score - a.score);
+
+      let assignS = (list) => {
+        let direction = 1;
+        let current = 1;
+        list.forEach(s => {
+          s.assignedClass = current;
+          current += direction;
+          if (current > currentClassCount) {
+            current = currentClassCount;
+            direction = -1;
+          } else if (current < 1) {
+            current = 1;
+            direction = 1;
+          }
+        });
+      };
+
+      assignS(males);
+      assignS(females);
+
+      let currentPenalty = calculateTotalPenalty();
+      let temp = 100.0;
+      let coolingRate = 0.9995;
+      let iterations = 50000;
+
+      for (let iter = 0; iter < iterations; iter++) {
+        let idx1 = Math.floor(Math.random() * students.length);
+        let idx2 = Math.floor(Math.random() * students.length);
+
+        if (idx1 === idx2) continue;
+        let s1 = students[idx1];
+        let s2 = students[idx2];
+
+        if (s1.gender !== s2.gender || s1.assignedClass === s2.assignedClass) continue;
+
+        let oldClass1 = s1.assignedClass;
+        let oldClass2 = s2.assignedClass;
+
+        s1.assignedClass = oldClass2;
+        s2.assignedClass = oldClass1;
+
+        let newPenalty = calculateTotalPenalty();
+        let delta = newPenalty - currentPenalty;
+
+        if (delta < 0 || Math.exp(-delta / temp) > Math.random()) {
+          currentPenalty = newPenalty;
+        } else {
+          s1.assignedClass = oldClass1;
+          s2.assignedClass = oldClass2;
+        }
+
+        temp *= coolingRate;
+      }
+
+      renderAll();
+      saveToLocalStorage(false);
+      showToast('超均等・クラス分け最適化が完了しました！', 'success');
+    }
+
+    function calculateTotalPenalty() {
+      let penalty = 0;
+
+      let totalStudents = students.length;
+      let maleTarget = students.filter(s => s.gender === '男').length / currentClassCount;
+      let femaleTarget = students.filter(s => s.gender === '女').length / currentClassCount;
+      let scoreTarget = totalStudents > 0 ? students.reduce((sum, s) => sum + s.score, 0) / totalStudents : 65;
+
+      let targetA = students.filter(s => s.flagA).length / currentClassCount;
+      let targetB = students.filter(s => s.flagB).length / currentClassCount;
+      let targetC = students.filter(s => s.flagC).length / currentClassCount;
+
+      let targetXXX = students.filter(s => s.flagXXX).length / currentClassCount;
+      let targetXX  = students.filter(s => s.flagXX).length / currentClassCount;
+      let targetX   = students.filter(s => s.flagX).length / currentClassCount;
+
+      let targetYYY = students.filter(s => s.flagYYY).length / currentClassCount;
+      let targetYY  = students.filter(s => s.flagYY).length / currentClassCount;
+      let targetY   = students.filter(s => s.flagY).length / currentClassCount;
+
+      let targetZZZ = students.filter(s => s.flagZZZ).length / currentClassCount;
+      let targetZZ  = students.filter(s => s.flagZZ).length / currentClassCount;
+      let targetZ   = students.filter(s => s.flagZ).length / currentClassCount;
+
+      let targetM = students.filter(s => s.flagM).length / currentClassCount;
+      let targetm = students.filter(s => s.flagm).length / currentClassCount;
+
+      let targetP = students.filter(s => s.flagP).length / currentClassCount;
+      let targetp = students.filter(s => s.flagp).length / currentClassCount;
+      let targetU = students.filter(s => s.flagU).length / currentClassCount;
+
+      for (let c = 1; c <= currentClassCount; c++) {
+        let clsList = students.filter(s => s.assignedClass === c);
+        
+        let mCount = clsList.filter(s => s.gender === '男').length;
+        let fCount = clsList.filter(s => s.gender === '女').length;
+        penalty += Math.pow(mCount - maleTarget, 2) * 8000;
+        penalty += Math.pow(fCount - femaleTarget, 2) * 8000;
+
+        let avgScore = clsList.length > 0 ? clsList.reduce((sum, s) => sum + s.score, 0) / clsList.length : 0;
+        penalty += Math.pow(avgScore - scoreTarget, 2) * 500;
+
+        penalty += Math.pow(clsList.filter(s => s.flagA).length - targetA, 2) * 6000;
+        penalty += Math.pow(clsList.filter(s => s.flagB).length - targetB, 2) * 3000;
+        penalty += Math.pow(clsList.filter(s => s.flagC).length - targetC, 2) * 1500;
+
+        penalty += Math.pow(clsList.filter(s => s.flagXXX).length - targetXXX, 2) * 8000;
+        penalty += Math.pow(clsList.filter(s => s.flagXX).length - targetXX, 2) * 4000;
+        penalty += Math.pow(clsList.filter(s => s.flagX).length - targetX, 2) * 2000;
+
+        penalty += Math.pow(clsList.filter(s => s.flagYYY).length - targetYYY, 2) * 6000;
+        penalty += Math.pow(clsList.filter(s => s.flagYY).length - targetYY, 2) * 3000;
+        penalty += Math.pow(clsList.filter(s => s.flagY).length - targetY, 2) * 1500;
+
+        penalty += Math.pow(clsList.filter(s => s.flagZZZ).length - targetZZZ, 2) * 8000;
+        penalty += Math.pow(clsList.filter(s => s.flagZZ).length - targetZZ, 2) * 4000;
+        penalty += Math.pow(clsList.filter(s => s.flagZ).length - targetZ, 2) * 2000;
+
+        penalty += Math.pow(clsList.filter(s => s.flagM).length - targetM, 2) * 7000;
+        penalty += Math.pow(clsList.filter(s => s.flagm).length - targetm, 2) * 3500;
+
+        let pianoCount = clsList.filter(s => s.flagP || s.flagp).length;
+        if (pianoCount === 0) penalty += 25000;
+        penalty += Math.pow(clsList.filter(s => s.flagP).length - targetP, 2) * 5000;
+        penalty += Math.pow(clsList.filter(s => s.flagp).length - targetp, 2) * 2500;
+
+        penalty += Math.pow(clsList.filter(s => s.flagU).length - targetU, 2) * 1500;
+
+        let c2Counts = {};
+        clsList.forEach(s => { c2Counts[s.class2] = (c2Counts[s.class2] || 0) + 1; });
+        Object.values(c2Counts).forEach(cnt => {
+          if (cnt > 3) penalty += Math.pow(cnt - 3, 2) * 1000;
+        });
+      }
+
+      students.forEach(s => {
+        if (s.pairDetach) {
+          let target = students.find(t => t.name === s.pairDetach);
+          if (target && target.assignedClass === s.assignedClass) penalty += 100000;
+        }
+        if (s.pairAttach) {
+          let target = students.find(t => t.name === s.pairAttach);
+          if (target && target.assignedClass !== s.assignedClass) penalty += 60000;
+        }
+      });
+
+      return penalty;
+    }
+
+    function checkConstraints() {
+      const container = document.getElementById('alertContainer');
+      let alerts = [];
+
+      students.forEach(s => {
+        if (s.pairDetach) {
+          let target = students.find(t => t.name === s.pairDetach);
+          if (target && target.assignedClass === s.assignedClass) {
+            alerts.push(`⚠️ 【離す制約違反】${s.name} と ${target.name} が同じ「${s.assignedClass}組」にいます。`);
+          }
+        }
+        if (s.pairAttach) {
+          let target = students.find(t => t.name === s.pairAttach);
+          if (target && target.assignedClass !== s.assignedClass) {
+            alerts.push(`⚠️ 【つける制約未達成】${s.name} (${s.assignedClass}組) と ${target.name} (${target.assignedClass}組) が別のクラスです。`);
+          }
+        }
+      });
+
+      for (let c = 1; c <= currentClassCount; c++) {
+        let clsStudents = students.filter(s => s.assignedClass === c);
+        let pianoCount = clsStudents.filter(s => s.flagP || s.flagp).length;
+        if (pianoCount === 0) {
+          alerts.push(`🎹 【ピアノ不在】${c}組 にピアノ担当可能者(P/p)がいません。`);
+        }
+        let leaderCount = clsStudents.filter(s => s.flagA || s.flagB).length;
+        if (leaderCount === 0) {
+          alerts.push(`ℹ️ 【リーダー不在】${c}組 にリーダー(A/B)がいません。`);
+        }
+      }
+
+      if (alerts.length > 0) {
+        container.innerHTML = `<div class="alert-box">${alerts.join('<br>')}</div>`;
+      } else {
+        container.innerHTML = '';
+      }
+    }
+
+    /* ==========================================
+       7. 生徒データ編集テーブル
+       ========================================== */
+    function renderStudentTable() {
+      const tbody = document.getElementById('studentTableBody');
+      const searchVal = document.getElementById('searchInput').value.trim().toLowerCase();
+      tbody.innerHTML = '';
+
+      let filtered = students.filter(s => {
+        if (!searchVal) return true;
+        return s.name.toLowerCase().includes(searchVal) ||
+               s.class1.toLowerCase().includes(searchVal) ||
+               s.class2.toLowerCase().includes(searchVal);
+      });
+
+      document.getElementById('studentCountBadge').textContent = `全 ${students.length} 名 (表示 ${filtered.length} 名)`;
+
+      filtered.forEach(s => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${s.id}</td>
+          <td><input type="text" value="${escapeHTML(s.name)}" onchange="updateStudentField(${s.id}, 'name', this.value)" style="width:100px;"></td>
+          <td>
+            <select onchange="updateStudentField(${s.id}, 'gender', this.value)">
+              <option value="男" ${s.gender === '男' ? 'selected' : ''}>男</option>
+              <option value="女" ${s.gender === '女' ? 'selected' : ''}>女</option>
+            </select>
+          </td>
+          <td><input type="number" value="${s.score}" onchange="updateStudentField(${s.id}, 'score', parseInt(this.value))" style="width:60px;"></td>
+          <td><input type="text" value="${escapeHTML(s.class1)}" onchange="updateStudentField(${s.id}, 'class1', this.value)" style="width:60px;"></td>
+          <td><input type="text" value="${escapeHTML(s.class2)}" onchange="updateStudentField(${s.id}, 'class2', this.value)" style="width:60px;"></td>
+          
+          <td>
+            <label><input type="checkbox" ${s.flagA ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagA', this.checked)">A</label>
+            <label><input type="checkbox" ${s.flagB ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagB', this.checked)">B</label>
+            <label><input type="checkbox" ${s.flagC ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagC', this.checked)">C</label>
+          </td>
+          <td>
+            <label><input type="checkbox" ${s.flagXXX ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagXXX', this.checked)">XXX</label>
+            <label><input type="checkbox" ${s.flagXX ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagXX', this.checked)">XX</label>
+            <label><input type="checkbox" ${s.flagX ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagX', this.checked)">X</label>
+          </td>
+          <td>
+            <label><input type="checkbox" ${s.flagYYY ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagYYY', this.checked)">YYY</label>
+            <label><input type="checkbox" ${s.flagYY ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagYY', this.checked)">YY</label>
+            <label><input type="checkbox" ${s.flagY ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagY', this.checked)">Y</label>
+          </td>
+          <td>
+            <label><input type="checkbox" ${s.flagZZZ ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagZZZ', this.checked)">ZZZ</label>
+            <label><input type="checkbox" ${s.flagZZ ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagZZ', this.checked)">ZZ</label>
+            <label><input type="checkbox" ${s.flagZ ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagZ', this.checked)">Z</label>
+          </td>
+          <td>
+            <label><input type="checkbox" ${s.flagM ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagM', this.checked)">M</label>
+            <label><input type="checkbox" ${s.flagm ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagm', this.checked)">m</label>
+          </td>
+          <td>
+            <label><input type="checkbox" ${s.flagP ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagP', this.checked)">P</label>
+            <label><input type="checkbox" ${s.flagp ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagp', this.checked)">p</label>
+          </td>
+          <td>
+            <label><input type="checkbox" ${s.flagU ? 'checked' : ''} onchange="updateStudentField(${s.id}, 'flagU', this.checked)">U</label>
+          </td>
+          <td><input type="text" value="${escapeHTML(s.pairAttach)}" onchange="updateStudentField(${s.id}, 'pairAttach', this.value)" style="width:90px;"></td>
+          <td><input type="text" value="${escapeHTML(s.pairDetach)}" onchange="updateStudentField(${s.id}, 'pairDetach', this.value)" style="width:90px;"></td>
+          <td>
+            <select onchange="updateStudentField(${s.id}, 'assignedClass', parseInt(this.value))">
+              ${Array.from({length: currentClassCount}, (_, i) => `<option value="${i+1}" ${s.assignedClass === i+1 ? 'selected' : ''}>${i+1}組</option>`).join('')}
+            </select>
+          </td>
+          <td>
+            <button class="btn btn-outline" style="padding:2px 8px; color:var(--danger);" onclick="deleteStudent(${s.id})">削除</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    function updateStudentField(id, field, value) {
+      const s = students.find(item => item.id === id);
+      if (s) {
+        s[field] = value;
+        checkConstraints();
+        saveToLocalStorage(false);
+      }
+    }
+
+    function filterStudentTable() {
+      renderStudentTable();
+    }
+
+    function addNewStudent() {
+      const newId = students.length > 0 ? Math.max(...students.map(s => s.id)) + 1 : 1;
+      students.push({
+        id: newId,
+        name: '新規 生徒',
+        gender: '男',
+        score: 60,
+        class1: '1組',
+        class2: '1組',
+        flagA: false, flagB: false, flagC: false,
+        flagXXX: false, flagXX: false, flagX: false,
+        flagYYY: false, flagYY: false, flagY: false,
+        flagZZZ: false, flagZZ: false, flagZ: false,
+        flagM: false, flagm: false,
+        flagP: false, flagp: false,
+        flagU: false,
+        pairAttach: '',
+        pairDetach: '',
+        assignedClass: 1
+      });
+      renderAll();
+      saveToLocalStorage(false);
+      showToast('新しい生徒を追加しました。', 'info');
+    }
+
+    function deleteStudent(id) {
+      if (confirm('この生徒データを削除しますか？')) {
+        students = students.filter(s => s.id !== id);
+        renderAll();
+        saveToLocalStorage(false);
+        showToast('生徒データを削除しました。', 'info');
+      }
+    }
+
+    /* ==========================================
+       8. CSV / Excel 入出力
+       ========================================== */
+    function exportClassResultsExcel() {
+      let lines = [];
+      lines.push(['■ クラス分け樽 - 新クラス編成結果一覧表']);
+      lines.push(['出力日時:', new Date().toLocaleString('ja-JP')]);
+      lines.push([]);
+
+      for (let c = 1; c <= currentClassCount; c++) {
+        const clsStudents = students.filter(s => s.assignedClass === c);
+        let maleList = sortStudents(clsStudents.filter(s => s.gender === '男'));
+        let femaleList = sortStudents(clsStudents.filter(s => s.gender === '女'));
+        const avgScore = clsStudents.length > 0 ? (clsStudents.reduce((sum, s) => sum + s.score, 0) / clsStudents.length).toFixed(1) : 0;
+
+        lines.push([`【 新 ${c} 組 】`, `計 ${clsStudents.length} 名`, `男子: ${maleList.length}名`, `女子: ${femaleList.length}名`, `平均点: ${avgScore}点`]);
+        lines.push(['No', '氏名', '性別', '学力点', '1年組', '2年組', 'リーダー', '攻撃・配慮・注意フラグ', 'ピアノ', '離さない相手', '離す相手']);
+
+        let sortedAll = [...maleList, ...femaleList];
+
+        sortedAll.forEach((s, idx) => {
+          let flags = [];
+          if (s.flagA) flags.push('A'); if (s.flagB) flags.push('B'); if (s.flagC) flags.push('C');
+          if (s.flagXXX) flags.push('XXX'); if (s.flagXX) flags.push('XX'); if (s.flagX) flags.push('X');
+          if (s.flagYYY) flags.push('YYY'); if (s.flagYY) flags.push('YY'); if (s.flagY) flags.push('Y');
+          if (s.flagZZZ) flags.push('ZZZ'); if (s.flagZZ) flags.push('ZZ'); if (s.flagZ) flags.push('Z');
+          if (s.flagM) flags.push('M'); if (s.flagm) flags.push('m'); if (s.flagU) flags.push('U');
+
+          let piano = [];
+          if (s.flagP) piano.push('P'); if (s.flagp) piano.push('p');
+
+          lines.push([
+            idx + 1,
+            s.name,
+            s.gender,
+            s.score,
+            s.class1,
+            s.class2,
+            s.flagA ? '学年(A)' : (s.flagB ? 'クラス(B)' : (s.flagC ? '班(C)' : '')),
+            flags.join(' '),
+            piano.join(' '),
+            s.pairAttach || '',
+            s.pairDetach || ''
+          ]);
+        });
+
+        lines.push([]);
+      }
+
+      let csvContent = '\uFEFF' + lines.map(row => row.map(cell => `"${String(cell).replace(/"/g, '""')}"`).join(',')).join('\r\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `クラス分け結果一覧_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+      showToast('Excel/CSV出力が完了しました！', 'success');
+    }
+
+    function exportCSV() {
+      const headers = [
+        'ID', '氏名', '性別', '学力', '1年組', '2年組',
+        '学年リーダーA', 'クラスリーダーB', '班リーダーC',
+        'かなり攻撃的XXX', '攻撃的XX', '少し攻撃的X',
+        'かなりやられるYYY', 'やられるYY', 'やられそうY',
+        'かなり配慮必要ZZZ', '配慮必要ZZ', '少し配慮必要Z',
+        '保護者かなり注意M', '保護者注意m',
+        'ピアノやりそうP', 'ピアノできそうp',
+        'いたらうれしいU', 'つける相手', '離す相手', '新クラス'
+      ];
+
+      let csvRows = [headers.join(',')];
+
+      students.forEach(s => {
+        let row = [
+          s.id,
+          `"${s.name.replace(/"/g, '""')}"`,
+          s.gender,
+          s.score,
+          `"${s.class1}"`,
+          `"${s.class2}"`,
+          s.flagA ? '1' : '0',
+          s.flagB ? '1' : '0',
+          s.flagC ? '1' : '0',
+          s.flagXXX ? '1' : '0',
+          s.flagXX ? '1' : '0',
+          s.flagX ? '1' : '0',
+          s.flagYYY ? '1' : '0',
+          s.flagYY ? '1' : '0',
+          s.flagY ? '1' : '0',
+          s.flagZZZ ? '1' : '0',
+          s.flagZZ ? '1' : '0',
+          s.flagZ ? '1' : '0',
+          s.flagM ? '1' : '0',
+          s.flagm ? '1' : '0',
+          s.flagP ? '1' : '0',
+          s.flagp ? '1' : '0',
+          s.flagU ? '1' : '0',
+          `"${(s.pairAttach || '').replace(/"/g, '""')}"`,
+          `"${(s.pairDetach || '').replace(/"/g, '""')}"`,
+          s.assignedClass
+        ];
+        csvRows.push(row.join(','));
+      });
+
+      const csvString = '\uFEFF' + csvRows.join('\r\n');
+      const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `生徒データ一覧_${new Date().toISOString().slice(0,10)}.csv`;
+      link.click();
+      showToast('マスターCSVの保存が完了しました。', 'success');
+    }
+
+    function importCSV() {
+      const fileInput = document.getElementById('csvFileInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        showToast('CSVファイルを選択してください。', 'warning');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split(/\r\n|\n/);
+        if (lines.length < 2) return;
+
+        let newStudents = [];
+        let idCounter = 1;
+
+        for (let i = 1; i < lines.length; i++) {
+          if (!lines[i].trim()) continue;
+          let cols = parseCSVLine(lines[i]);
+          if (cols.length < 5) continue;
+
+          newStudents.push({
+            id: idCounter++,
+            name: cols[1] || '無名',
+            gender: cols[2] === '女' ? '女' : '男',
+            score: parseInt(cols[3]) || 50,
+            class1: cols[4] || '1組',
+            class2: cols[5] || '1組',
+            flagA: cols[6] === '1' || cols[6] === 'true',
+            flagB: cols[7] === '1' || cols[7] === 'true',
+            flagC: cols[8] === '1' || cols[8] === 'true',
+            flagXXX: cols[9] === '1' || cols[9] === 'true',
+            flagXX: cols[10] === '1' || cols[10] === 'true',
+            flagX: cols[11] === '1' || cols[11] === 'true',
+            flagYYY: cols[12] === '1' || cols[12] === 'true',
+            flagYY: cols[13] === '1' || cols[13] === 'true',
+            flagY: cols[14] === '1' || cols[14] === 'true',
+            flagZZZ: cols[15] === '1' || cols[15] === 'true',
+            flagZZ: cols[16] === '1' || cols[16] === 'true',
+            flagZ: cols[17] === '1' || cols[17] === 'true',
+            flagM: cols[18] === '1' || cols[18] === 'true',
+            flagm: cols[19] === '1' || cols[19] === 'true',
+            flagP: cols[20] === '1' || cols[20] === 'true',
+            flagp: cols[21] === '1' || cols[21] === 'true',
+            flagU: cols[22] === '1' || cols[22] === 'true',
+            pairAttach: cols[23] || '',
+            pairDetach: cols[24] || '',
+            assignedClass: parseInt(cols[25]) || 1
+          });
+        }
+
+        if (newStudents.length > 0) {
+          students = newStudents;
+          renderAll();
+          switchTab('classViewTab');
+          saveToLocalStorage(false);
+          showToast(`${students.length}名分のCSVを読み込みました！`, 'success');
+        }
+      };
+      reader.readAsText(file, 'UTF-8');
+    }
+
+    function parseCSVLine(text) {
+      let result = [];
+      let cur = '';
+      let inQuotes = false;
+      for (let i = 0; i < text.length; i++) {
+        let c = text[i];
+        if (c === '"') {
+          inQuotes = !inQuotes;
+        } else if (c === ',' && !inQuotes) {
+          result.push(cur.trim());
+          cur = '';
+        } else {
+          cur += c;
+        }
+      }
+      result.push(cur.trim());
+      return result;
+    }
+
+    /* ==========================================
+       9. 改修版 A3横向き 1クラス1枚 印刷機能
+       ========================================== */
+    function prepareAndPrint() {
+      const printContainer = document.getElementById('printContainer');
+      const isMasked = document.getElementById('maskingPrintCheckbox').checked;
+      printContainer.innerHTML = '';
+
+      for (let c = 1; c <= currentClassCount; c++) {
+        const classStudents = students.filter(s => s.assignedClass === c);
+        let maleList = sortStudentsCustom(classStudents.filter(s => s.gender === '男'), currentSortOrder);
+        let femaleList = sortStudentsCustom(classStudents.filter(s => s.gender === '女'), currentSortOrder);
+
+        const avgScore = classStudents.length > 0 
+          ? (classStudents.reduce((sum, s) => sum + s.score, 0) / classStudents.length).toFixed(1) 
+          : 0;
+
+        function buildPrintRows(list) {
+          return list.map((s, idx) => {
+            let flags = [];
+            if (!isMasked) {
+              if (s.flagA) flags.push('リーダーA');
+              if (s.flagB) flags.push('リーダーB');
+              if (s.flagC) flags.push('リーダーC');
+              if (s.flagXXX) flags.push('攻撃XXX');
+              if (s.flagXX)  flags.push('攻撃XX');
+              if (s.flagX)   flags.push('攻撃X');
+              if (s.flagYYY) flags.push('被攻撃YYY');
+              if (s.flagYY)  flags.push('被攻撃YY');
+              if (s.flagY)   flags.push('被攻撃Y');
+              if (s.flagZZZ) flags.push('配慮ZZZ');
+              if (s.flagZZ)  flags.push('配慮ZZ');
+              if (s.flagZ)   flags.push('配慮Z');
+              if (s.flagM) flags.push('保護者M');
+              if (s.flagm) flags.push('保護者m');
+              if (s.flagP) flags.push('ピアノP');
+              if (s.flagp) flags.push('ピアノp');
+              if (s.flagU) flags.push('うれしいU');
+            }
+
+            return `
+              <tr>
+                <td style="text-align:center; width:26px;">${idx + 1}</td>
+                <td style="font-weight:bold; width:110px;">${escapeHTML(s.name)}</td>
+                <td style="text-align:center; width:40px;">${s.score}点</td>
+                <td style="text-align:center; width:40px;">${s.class1}</td>
+                <td style="text-align:center; width:40px;">${s.class2}</td>
+                <td style="font-size:0.75rem;">${isMasked ? '-' : (flags.length > 0 ? flags.join(', ') : '-')}</td>
+                <td style="font-size:0.75rem;">
+                  ${(!isMasked && s.pairAttach) ? '🔗' + escapeHTML(s.pairAttach) : ''}
+                  ${(!isMasked && s.pairDetach) ? '✂️' + escapeHTML(s.pairDetach) : ''}
+                  ${isMasked ? '-' : ''}
+                </td>
+              </tr>
+            `;
+          }).join('');
+        }
+
+        const pageHTML = `
+          <div class="print-page">
+            <div>
+              <div class="print-header">
+                <h2>新 ${c} 組 名簿 ${isMasked ? '（会議・配付用）' : ''}</h2>
+                <div class="print-stats">
+                  <strong>合計 ${classStudents.length} 名</strong>（男子: ${maleList.length}名 / 女子: ${femaleList.length}名） ${!isMasked ? '| 平均点: ' + avgScore + '点' : ''}
+                </div>
+              </div>
+
+              <div class="print-columns">
+                <div class="print-column">
+                  <h3>👦 男子 (${maleList.length}名)</h3>
+                  <table class="print-table">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>氏名</th>
+                        <th>学力</th>
+                        <th>1年</th>
+                        <th>2年</th>
+                        <th>主要条件・配慮</th>
+                        <th>人間関係メモ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${buildPrintRows(maleList)}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="print-column">
+                  <h3>👧 女子 (${femaleList.length}名)</h3>
+                  <table class="print-table">
+                    <thead>
+                      <tr>
+                        <th>No</th>
+                        <th>氏名</th>
+                        <th>学力</th>
+                        <th>1年</th>
+                        <th>2年</th>
+                        <th>主要条件・配慮</th>
+                        <th>人間関係メモ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      ${buildPrintRows(femaleList)}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            <div class="print-footer-info">
+              クラス分け樽 - 印刷日時: ${new Date().toLocaleDateString('ja-JP')}
+            </div>
+          </div>
+        `;
+
+        printContainer.innerHTML += pageHTML;
+      }
+
+      setTimeout(() => {
+        window.print();
+      }, 200);
+    }
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>"']/g, function(m) {
+        return {
+          '&': '&amp;',
+          '<': '&lt;',
+          '>': '&gt;',
+          '"': '&quot;',
+          "'": '&#039;'
+        }[m];
+      });
+    }
+  </script>
+</body>
+</html>
